@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="AppBg"        Color="#14161B"/>
+    <SolidColorBrush x:Key="CanvasBg"     Color="#1A1D23"/>
+    <SolidColorBrush x:Key="GridDot"      Color="#30353F"/>
+    <SolidColorBrush x:Key="TopBarBg"     Color="#2B2A29"/>
+    <SolidColorBrush x:Key="TopBarBorder" Color="#3B3A39"/>
+    <SolidColorBrush x:Key="RibbonTabBarBg" Color="#201F1E"/>
+    <SolidColorBrush x:Key="RibbonBg"     Color="#2B2A29"/>
+    <SolidColorBrush x:Key="ExcelAccent"  Color="#217346"/>
+    <SolidColorBrush x:Key="RibbonHover"  Color="#3B3A39"/>
+    <SolidColorBrush x:Key="RibbonHoverBorder" Color="#4A4948"/>
+    <SolidColorBrush x:Key="RibbonActive" Color="#1F4D32"/>
+    <SolidColorBrush x:Key="RibbonActiveFg" Color="#A8D5B5"/>
+    <SolidColorBrush x:Key="Fg"           Color="#E6E8EE"/>
+    <SolidColorBrush x:Key="FgMuted"      Color="#9AA3B2"/>
+
+    <SolidColorBrush x:Key="NodeBg"       Color="#262B34"/>
+    <SolidColorBrush x:Key="NodeBorder"   Color="#3A4050"/>
+    <SolidColorBrush x:Key="NodeSelected" Color="#60A5FA"/>
+    <SolidColorBrush x:Key="InputBg"      Color="#1B1F26"/>
+    <SolidColorBrush x:Key="PopupBg"      Color="#2B303A"/>
+
+    <SolidColorBrush x:Key="DialogueAccent" Color="#5B9BFF"/>
+    <SolidColorBrush x:Key="ChoiceAccent"   Color="#FBBF24"/>
+
+    <SolidColorBrush x:Key="FlowNormal"   Color="#7B8598"/>
+    <SolidColorBrush x:Key="FlowChoice"   Color="#FBBF24"/>
+    <SolidColorBrush x:Key="FlowSource"   Color="#34D399"/>
+    <SolidColorBrush x:Key="FlowDelete"   Color="#F87171"/>
+
+    <SolidColorBrush x:Key="ButtonHover"    Color="#2C323D"/>
+    <SolidColorBrush x:Key="ButtonActive"   Color="#1E3A5F"/>
+    <SolidColorBrush x:Key="ButtonActiveFg" Color="#93C5FD"/>
+    <SolidColorBrush x:Key="SwitchOff"      Color="#475569"/>
+    <SolidColorBrush x:Key="SwitchOn"       Color="#3B82F6"/>
+</ResourceDictionary>

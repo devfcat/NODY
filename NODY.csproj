@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Nody</RootNamespace>
+    <AssemblyName>NODY</AssemblyName>
+    <Version>1.0.0</Version>
+    <ApplicationIcon>Images\icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 엑셀 템플릿 생성 / 노드 미리보기 읽기용 -->
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\NODY.png" />
+    <Resource Include="Images\icon.png" />
+    <Resource Include="Images\icon.ico" />
+    <Resource Include="version.json" />
+  </ItemGroup>
+
+</Project>
