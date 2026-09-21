@@ -34,4 +34,5 @@
     <SolidColorBrush x:Key="ButtonActiveFg" Color="#1D4ED8"/>
     <SolidColorBrush x:Key="SwitchOff"      Color="#CBD5E1"/>
     <SolidColorBrush x:Key="SwitchOn"       Color="#3B82F6"/>
+    <SolidColorBrush x:Key="MinimapViewFill" Color="#332563EB"/>
 </ResourceDictionary>

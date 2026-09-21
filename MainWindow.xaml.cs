@@ -37,6 +37,10 @@ public partial class MainWindow : Window
     private Point _panStart;
     private double _panOffX, _panOffY;
 
+    // ── 미니맵 ──
+    private bool _minimapDrag;
+    private double _mmScale = 1, _mmOx, _mmOy, _mmWorldL, _mmWorldT;
+
     // ── 자동 저장 ──
     private readonly DispatcherTimer _saveTimer;
     private bool _dirty, _loading;
@@ -50,6 +54,8 @@ public partial class MainWindow : Window
         _saveTimer.Tick += (_, _) => { _saveTimer.Stop(); SaveNow(); };
 
         Loaded += MainWindow_Loaded;
+        SizeChanged += (_, _) => { UpdateMinimapSize(); RedrawMinimap(); };
+        Viewport.SizeChanged += (_, _) => { UpdateMinimapSize(); RedrawMinimap(); };
         BindAboutInfo();
     }
 
@@ -221,6 +227,7 @@ public partial class MainWindow : Window
         _worldTransform.Matrix = m;
         GridBrush.Transform = new MatrixTransform(m);
         StatusZoom.Text = $"{_zoom * 100:0}%";
+        RedrawMinimap();
     }
 
     private void Viewport_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -321,6 +328,153 @@ public partial class MainWindow : Window
 
     private void SetStatus(string text) => StatusMain.Text = text;
 
+    // ════════════════════════ 미니맵 ════════════════════════
+
+    private void UpdateMinimapSize()
+    {
+        if (MinimapHost == null) return;
+
+        var ratio = Math.Max(ActualWidth, 1) / Math.Max(ActualHeight, 1);
+        const double maxW = 200;
+        var w = maxW;
+        var h = w / ratio;
+
+        var cap = Viewport.ActualHeight > 0 ? Viewport.ActualHeight * 0.38 : 160;
+        if (h > cap)
+        {
+            h = cap;
+            w = h * ratio;
+        }
+
+        MinimapHost.Width = w;
+        MinimapHost.Height = h;
+        MinimapCanvas.Width = Math.Max(w - 2, 1);
+        MinimapCanvas.Height = Math.Max(h - 2, 1);
+    }
+
+    private void RedrawMinimap()
+    {
+        if (MinimapCanvas == null) return;
+        UpdateMinimapSize();
+        MinimapCanvas.Children.Clear();
+
+        var mw = MinimapCanvas.Width;
+        var mh = MinimapCanvas.Height;
+        if (double.IsNaN(mw) || double.IsNaN(mh) || mw < 4 || mh < 4) return;
+
+        var viewW = Math.Max(Viewport.ActualWidth, 1);
+        var viewH = Math.Max(Viewport.ActualHeight, 1);
+        var camL = -_offX / _zoom;
+        var camT = -_offY / _zoom;
+        var camR = camL + viewW / _zoom;
+        var camB = camT + viewH / _zoom;
+
+        double l = camL, t = camT, r = camR, b = camB;
+        foreach (var n in _data.Nodes)
+        {
+            l = Math.Min(l, n.X);
+            t = Math.Min(t, n.Y);
+            r = Math.Max(r, n.X + NodeView.NodeWidth);
+            b = Math.Max(b, n.Y + NodeView.NodeHeight);
+        }
+
+        var bw = Math.Max(r - l, 1);
+        var bh = Math.Max(b - t, 1);
+        var pad = Math.Max(24, Math.Max(bw, bh) * 0.08);
+        l -= pad; t -= pad; r += pad; b += pad;
+        bw = r - l; bh = b - t;
+
+        _mmScale = Math.Min(mw / bw, mh / bh);
+        _mmOx = (mw - bw * _mmScale) / 2;
+        _mmOy = (mh - bh * _mmScale) / 2;
+        _mmWorldL = l;
+        _mmWorldT = t;
+
+        foreach (var n in _data.Nodes)
+        {
+            var p = WorldToMini(n.X, n.Y);
+            var rect = new Rectangle
+            {
+                Width = Math.Max(3, NodeView.NodeWidth * _mmScale),
+                Height = Math.Max(2, NodeView.NodeHeight * _mmScale),
+                RadiusX = 1.5,
+                RadiusY = 1.5,
+                IsHitTestVisible = false
+            };
+            var fillKey = n.Type == NodeType.Dialogue ? "DialogueAccent" : "ChoiceAccent";
+            rect.SetResourceReference(Shape.FillProperty, fillKey);
+            if (_selected != null && _selected.Model.Id == n.Id)
+            {
+                rect.StrokeThickness = 1.4;
+                rect.SetResourceReference(Shape.StrokeProperty, "NodeSelected");
+            }
+            Canvas.SetLeft(rect, p.X);
+            Canvas.SetTop(rect, p.Y);
+            MinimapCanvas.Children.Add(rect);
+        }
+
+        var cam = WorldToMini(camL, camT);
+        var camBox = new Rectangle
+        {
+            Width = Math.Max(4, (camR - camL) * _mmScale),
+            Height = Math.Max(4, (camB - camT) * _mmScale),
+            StrokeThickness = 1.4,
+            IsHitTestVisible = false
+        };
+        camBox.SetResourceReference(Shape.StrokeProperty, "NodeSelected");
+        camBox.SetResourceReference(Shape.FillProperty, "MinimapViewFill");
+        Canvas.SetLeft(camBox, cam.X);
+        Canvas.SetTop(camBox, cam.Y);
+        MinimapCanvas.Children.Add(camBox);
+    }
+
+    private Point WorldToMini(double x, double y) =>
+        new((x - _mmWorldL) * _mmScale + _mmOx, (y - _mmWorldT) * _mmScale + _mmOy);
+
+    private Point MiniToWorld(Point p) =>
+        new((p.X - _mmOx) / _mmScale + _mmWorldL, (p.Y - _mmOy) / _mmScale + _mmWorldT);
+
+    private void CenterViewOnWorld(Point world)
+    {
+        _offX = Viewport.ActualWidth / 2 - world.X * _zoom;
+        _offY = Viewport.ActualHeight / 2 - world.Y * _zoom;
+        ApplyView();
+    }
+
+    private void Minimap_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+        _minimapDrag = true;
+        MinimapHost.CaptureMouse();
+        CenterViewOnWorld(MiniToWorld(e.GetPosition(MinimapCanvas)));
+    }
+
+    private void Minimap_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!_minimapDrag) return;
+        CenterViewOnWorld(MiniToWorld(e.GetPosition(MinimapCanvas)));
+    }
+
+    private void Minimap_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (!_minimapDrag) return;
+        e.Handled = true;
+        _minimapDrag = false;
+        MinimapHost.ReleaseMouseCapture();
+        MarkDirty();
+    }
+
+    private void Minimap_MouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        e.Handled = true;
+        var world = MiniToWorld(e.GetPosition(MinimapCanvas));
+        var factor = e.Delta > 0 ? 1.1 : 1 / 1.1;
+        var newZoom = Math.Clamp(_zoom * factor, 0.3, 2.0);
+        _zoom = newZoom;
+        CenterViewOnWorld(world);
+        MarkDirty();
+    }
+
     // ════════════════════════ 노드 ════════════════════════
 
     private NodeView CreateView(NodeModel m)
@@ -331,7 +485,12 @@ public partial class MainWindow : Window
 
         v.Pressed += NodePressed;
         v.Activated += n => { Viewport.Focus(); Select(n); };
-        v.Moved += _ => { RedrawFlows(); if (_flowSource != null) UpdateRubber(Mouse.GetPosition(Viewport)); };
+        v.Moved += _ =>
+        {
+            RedrawFlows();
+            RedrawMinimap();
+            if (_flowSource != null) UpdateRubber(Mouse.GetPosition(Viewport));
+        };
         v.MoveCompleted += _ => MarkDirty();
         v.TypeChanged += NodeTypeChanged;
         v.RenameRequested += NodeRenameRequested;
@@ -339,6 +498,7 @@ public partial class MainWindow : Window
         NodeLayer.Children.Add(v);
         _views[m.Id] = v;
         RefreshPreview(v, true);
+        RedrawMinimap();
         return v;
     }
 
@@ -348,6 +508,7 @@ public partial class MainWindow : Window
         if (_selected != null) _selected.IsSelected = false;
         _selected = v;
         if (v != null) v.IsSelected = true;
+        RedrawMinimap();
     }
 
     private void ClearSelection() => Select(null);
@@ -458,6 +619,7 @@ public partial class MainWindow : Window
 
         RedrawFlows();
         UpdateEmptyHint();
+        RedrawMinimap();
         MarkDirty();
         SetStatus($"'{m.Name}' 노드를 삭제했습니다.");
     }

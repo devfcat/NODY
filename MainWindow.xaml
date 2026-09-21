@@ -193,6 +193,23 @@
             <TextBlock x:Name="EmptyHint" HorizontalAlignment="Center" VerticalAlignment="Center"
                        TextAlignment="Center" FontSize="15" IsHitTestVisible="False"
                        Foreground="{DynamicResource FgMuted}"/>
+
+            <!-- 노드 미니맵 (창 비율과 동일) -->
+            <Border x:Name="MinimapHost"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="14" BorderThickness="1" CornerRadius="4"
+                    Background="{DynamicResource NodeBg}"
+                    BorderBrush="{DynamicResource TopBarBorder}"
+                    ClipToBounds="True" Cursor="Hand"
+                    MouseLeftButtonDown="Minimap_MouseLeftButtonDown"
+                    MouseMove="Minimap_MouseMove"
+                    MouseLeftButtonUp="Minimap_MouseLeftButtonUp"
+                    MouseWheel="Minimap_MouseWheel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.28"/>
+                </Border.Effect>
+                <Canvas x:Name="MinimapCanvas" IsHitTestVisible="False"/>
+            </Border>
         </Grid>
 
         <!-- ───────── 상태바 ───────── -->
