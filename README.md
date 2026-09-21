@@ -2,8 +2,6 @@
   <img src="Images/NODY.png" alt="NODY" height="44">
 </p>
 
-<h1 align="center">NODY</h1>
-
 <p align="center">노드로 플로우를 확인할 수 있는 스크립트 에디터</p>
 
 <p align="center">
