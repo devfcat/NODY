@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Nody.AndroidApp</RootNamespace>
+    <AssemblyName>NODY.Android</AssemblyName>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <ApplicationTitle>NODY</ApplicationTitle>
+    <ApplicationId>com.nody.editor</ApplicationId>
+    <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Models\NodeModel.cs" Link="Shared\NodeModel.cs" />
+    <Compile Include="..\Models\ProjectData.cs" Link="Shared\ProjectData.cs" />
+    <MauiAsset Include="..\version.json" LogicalName="version.json" />
+    <MauiIcon Include="Resources\AppIcon\appicon.png" />
+    <MauiImage Include="Resources\Images\nody.png" />
+  </ItemGroup>
+
+</Project>

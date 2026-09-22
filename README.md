@@ -78,3 +78,7 @@ dotnet publish -c Release -p:PublishProfile=win-x64
 ```
 
 결과는 `publish/NODY-1.0.0/NODY.exe` 에 생깁니다.
+
+## Android
+
+같은 프로젝트 형식(`nody_flow.json`, `.xlsx`)을 쓰는 안드로이드 앱은 `Android/` 폴더에 있습니다. 빌드 방법은 [Android/README.md](Android/README.md) 를 보세요.

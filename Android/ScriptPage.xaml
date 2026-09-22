@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Nody.AndroidApp.ScriptPage"
+             Title="스크립트">
+    <Grid RowDefinitions="Auto,*,Auto" Padding="12">
+        <Label x:Name="HintLabel" FontSize="13" TextColor="#6B7280" Margin="0,0,0,8"/>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout x:Name="RowsBox" Spacing="12"/>
+        </ScrollView>
+        <HorizontalStackLayout Grid.Row="2" Spacing="8" Margin="0,10,0,0">
+            <Button Text="행 추가" Clicked="AddRow_Clicked"/>
+            <Button Text="저장" Clicked="Save_Clicked"/>
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>
